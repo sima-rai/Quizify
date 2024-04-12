@@ -45,8 +45,8 @@
               </form>
               
               {% else %}
-                <a class="btn btn-light" role="button">Log in</a>
-                <a class="btn btn-primary" role="button">Sign up</a>
+                <a href="{% url 'login' %}" class="btn btn-light" role="button">Log in</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary" role="button">Sign up</a>
               {% endif %}
             </div>
           </div>
