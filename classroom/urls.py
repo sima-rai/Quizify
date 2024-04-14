@@ -13,5 +13,9 @@ urlpatterns = [
 
     path('teachers/', include(([
         path('', teachers.QuizListView.as_view(), name='quiz_change_list'),
+        path('quiz/add/', teachers.QuizCreateView.as_view(), name='quiz_add'),
+        path('quiz/<int:pk>/', teachers.QuizUpdateView.as_view(), name='quiz_change'),
+
+
     ], 'classroom'), namespace='teachers')),
 ]
