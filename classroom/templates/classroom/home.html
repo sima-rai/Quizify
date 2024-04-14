@@ -3,6 +3,11 @@
 {% load static %}
 {% block content %}
   <img  class="homepage" src="{% static 'img/quiz.webp' %}" alt="description" style="width: 100%;">
+
+  <p class="home-text" style="margin-top:18px;font-size: 21px;">
+    If you already have an account, go ahead and <a href="{% url 'login' %}">log in</a>. If you are new to Quizify, get started
+    by creating a <a href="{% url 'student_signup' %}">student account</a> or a <a href="{% url 'teacher_signup' %}">teacher account</a>.
+  </p>
  
 {% endblock %}
 
