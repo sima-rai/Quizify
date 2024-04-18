@@ -294,3 +294,25 @@ class QuestionDeleteView(DeleteView):
         question = self.get_object()
 
         return reverse('teachers:quiz_change', kwargs={'pk': question.quiz_id})
+        
+@method_decorator([login_required, teacher_required], name='dispatch')
+class QuizResultsView(DetailView):
+    model = Quiz
+    context_object_name = 'quiz'
+    template_name = 'classroom/teachers/quiz_results.html'
+
+    def get_context_data(self, **kwargs):
+        quiz = self.get_object()
+        taken_quizzes = quiz.taken_quizzes.select_related('student__user').order_by('-date')
+        total_taken_quizzes = taken_quizzes.count()
+        quiz_score = quiz.taken_quizzes.aggregate(average_score=Avg('score'))
+        extra_context = {
+            'taken_quizzes': taken_quizzes,
+            'total_taken_quizzes': total_taken_quizzes,
+            'quiz_score': quiz_score
+        }
+        kwargs.update(extra_context)
+        return super().get_context_data(**kwargs)
+
+    def get_queryset(self):
+        return self.request.user.quizzes.all()
