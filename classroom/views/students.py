@@ -12,6 +12,7 @@ from ..decorators import student_required
 from django.views.generic import TemplateView
 
 from .forms import StudentSignUpForm
+from .forms import StudentSignUpForm, StudentInterestsForm
 from ..models import Quiz, Student, TakenQuiz, User
 
 
@@ -61,4 +62,16 @@ class TakenQuizListView(ListView):
             .order_by('quiz__name')
         return queryset
  
-    
+@method_decorator([login_required, student_required], name='dispatch')
+class StudentInterestsView(UpdateView):
+    model = Student
+    form_class = StudentInterestsForm
+    template_name = 'classroom/students/interests_form.html'
+    success_url = reverse_lazy('students:quiz_list')
+
+    def get_object(self):
+        return self.request.user.student
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Interests updated with success!')
+        return super().form_valid(form)
