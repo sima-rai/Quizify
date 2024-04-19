@@ -91,8 +91,19 @@ def take_quiz(request, pk):
     # unanswered_questions = student.get_unanswered_questions(quiz).order_by('?')
     unanswered_questions = student.get_unanswered_questions(quiz)
     total_unanswered_questions = unanswered_questions.count()
-    progress = 100 - round(((total_unanswered_questions - 1) / total_questions) * 100)
-    question = unanswered_questions.first()
+    # progress = 100 - round(((total_unanswered_questions - 1) / total_questions) * 100)
+    if total_questions != 0:
+        progress = 100 - round(((total_unanswered_questions - 1) / total_questions) * 100)
+    else:
+        progress = 0  
+    # question = unanswered_questions.first()
+    if unanswered_questions.exists():
+        question = unanswered_questions.first()
+    else:
+        # Handle the case where there are no unanswered questions
+        # You might want to redirect the user or display a message
+        messages.info(request, 'There are currently no quizzes available for you to play.')
+        return redirect('students:quiz_list')
 
     if request.method == 'POST':
         form = TakeQuizForm(question=question, data=request.POST)
