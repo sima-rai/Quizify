@@ -69,6 +69,38 @@ class BaseAnswerInlineFormSet(forms.BaseInlineFormSet):
             raise ValidationError('Mark at least one answer as correct.', code='no_correct_answer')
 
 
+class StudentSignUpForm(UserCreationForm):
+    interests = forms.ModelMultipleChoiceField(
+        queryset=Subject.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )
 
+    class Meta(UserCreationForm.Meta):
+        model = User
 
+    @transaction.atomic
+    def save(self):
+        user = super().save(commit=False)
+        user.is_student = True
+        user.save()
+        student = Student.objects.create(user=user)
+        student.interests.add(*self.cleaned_data.get('interests'))
+        return user
+
+class TakeQuizForm(forms.ModelForm):
+    answer = forms.ModelChoiceField(
+        queryset=Answer.objects.none(),
+        widget=forms.RadioSelect(),
+        required=True,
+        empty_label=None)
+
+    class Meta:
+        model = StudentAnswer
+        fields = ('answer', )
+
+    def __init__(self, *args, **kwargs):
+        question = kwargs.pop('question')
+        super().__init__(*args, **kwargs)
+        self.fields['answer'].queryset = question.answers.order_by('text')
 

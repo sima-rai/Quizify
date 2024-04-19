@@ -57,7 +57,14 @@ class Student(models.Model):
     quizzes = models.ManyToManyField(Quiz, through='TakenQuiz')
     interests = models.ManyToManyField(Subject, related_name='interested_students')
 
-
+    def get_unanswered_questions(self, quiz):
+        answered_questions = self.quiz_answers \
+            .filter(answer__question__quiz=quiz) \
+            .values_list('answer__question__pk', flat=True)
+        questions = quiz.questions.exclude(pk__in=answered_questions).order_by('text')
+        # shuffled_questions = questions.annotate(random_order=Random()).order_by('random_order')
+        return questions
+        
     def __str__(self):
         return self.user.username
 
